@@ -124,19 +124,29 @@ html, body {
 .navbar .nav > li {
     padding-right: 20px;
 }
-.navbar .nav > li > a, .navbar .nav .active > a:hover {
+.navbar .nav > li > a {
     background: none;
     color: #2f2f2f;
     font-family: Arial;
     font-size: 12px;
     text-shadow: none;
 }
+.navbar .nav .active {
+    background: #fff;
+}
+.navbar .nav li li:hover {
+    background: #fff;
+}
+.navbar .nav .active .active a:hover {
+    background: none;
+    color: #d9d9d9;
+}
 .navbar .nav .active > a {
     background: none;
     color: #ea0000;
     text-decoration: underline;
 }
-.navbar .nav > li > a:hover, .navbar .nav .active > a:hover {
+.navbar .nav > li > a:hover {
     color: #ea0000;
     text-decoration: underline;
 }
@@ -213,8 +223,9 @@ html, body {
 .nav li li a:hover {
     color: #d9d9d9;
 }
-.nav li li .active {
+.navbar .nav li li.active a {
     color: #d9d9d9;
+    text-decoration: none;
 }
 .nav ul {
     border: 1px solid #f8f8f8;
