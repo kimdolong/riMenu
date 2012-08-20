@@ -2,6 +2,7 @@
 use plugins\riPlugin\Plugin;
 $menus_tree = Plugin::get('riMenu.Tree')->getTree();
 
+
 ?>
 
 <div id="items-slideshow-left">

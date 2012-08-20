@@ -33,7 +33,9 @@ class Tree {
 			$this->menu_tree = array(); 
 			$this->is_deepest_cats_built = false;
 			while (!$menus->EOF) {
-				$this->menu_tree[$menus->fields['menus_id']] = $menus->fields;								
+				$this->menu_tree[$menus->fields['menus_id']] = $menus->fields;
+                if(!empty($menus->fields['menus_main_page']) || !empty($menus->fields['menus_parameters']))
+                $this->menu_tree[$menus->fields['menus_id']]['link'] = zen_href_link($menus->fields['menus_main_page'], $menus->fields['menus_parameters']);
 				$this->menu_tree[$menus->fields['menus_id']]['path'][] = $menus->fields['menus_id'];
 				$this->menu_tree[$menus->fields['parent_id']]['sub_menus'][] = $menus->fields['menus_id'];
 				$menus->MoveNext();
@@ -175,14 +177,55 @@ class Tree {
 		}		
 	}
 		
-	function _getMenusId($menus_id){
+	public function _getMenusId($menus_id){
 		if(!is_int($menus_id)){
 			$temp = explode('_',$menus_id);
 			$menus_id = end($temp);
 		}
 		return $menus_id;
 	}
-	
+
+    /**
+     * check the whole menu tree and mark each menu as active or not
+     * @param $menu_tree
+     * @param $menus_id
+     * @param $link_current
+     * @param int $active_menu_id
+     */
+    public function checkActive(&$menu_tree, $menus_id, $link_current, &$active_menu_id = 0){
+        // a small hack for index page
+        if($link_current == '/index.php' || $link_current == '/')
+            $link_current = '/index.php?main_page=index';
+
+        foreach($menu_tree[$menus_id]['sub_menus'] as $menu_id){
+
+            // rebuild the link to do comparison
+            $link_parts = parse_url($menu_tree[$menu_id]['link']);
+            $_link = str_replace("&amp;", "&", $link_parts['path'] . '?' . $link_parts['query'] . $link_parts['fragment']);
+
+            if(strpos($link_current, $_link) !== false){
+                // check if there is another active link
+                if($active_menu_id != 0){
+                    if(strlen($menu_tree[$menu_id]['link']) > strlen($menu_tree[$active_menu_id]['link'])){
+                        $menu_tree[$active_menu_id]['is_active'] = false;
+                        $menu_tree[$menu_id]['is_active'] = true;
+                        $active_menu_id = $menu_id;
+                    }
+                }
+                else{
+                    $menu_tree[$menu_id]['is_active'] = true;
+                    $active_menu_id = $menu_id;
+                }
+            }
+            else
+                $menu_tree[$menu_id]['is_active'] = false;
+
+            if($menu_tree[$menu_id]['has_children'])
+                $this->checkActive($menu_tree, $menu_id, $link_current, $active_menu_id);
+
+        }
+    }
+
 	/*
 	function attachToMenuTree($new_node, $parent_id = 0){
 		// we first need to find and assign a "fake" menu id

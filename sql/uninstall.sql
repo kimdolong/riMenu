@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS `menu`;
-DROP TABLE IF EXISTS `menu_description`;
+DROP TABLE IF EXISTS `menus`;
+DROP TABLE IF EXISTS `menus_description`;
